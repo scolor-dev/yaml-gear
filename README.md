@@ -1,17 +1,19 @@
-# YAML-GEAR
+# yaml-gear
 
-## インストール
+A fast YAML parser and stringifier powered by Rust + WebAssembly.
+
+## Install
 
 ```bash
 npm install yaml-gear@alpha
 ```
 
-## 使い方
+## Usage
 
 `await init()` は不要です。そのまま呼び出せます。
 
 ```js
-import { parseYaml, stringifyYaml } from 'yaml-gear';
+import { parseYaml, parseAllYaml, stringifyYaml } from 'yaml-gear';
 
 const obj = await parseYaml(`
 name: Alice
@@ -30,22 +32,29 @@ console.log(yaml);
 // => "name: Alice\nage: 30\n"
 ```
 
+### マルチドキュメント
+
+`---` で区切られた複数ドキュメントを配列として取得できます。
+
+```js
+const docs = await parseAllYaml(`
+---
+name: Alice
+---
+name: Bob
+`);
+console.log(docs);
+// => [{ name: 'Alice' }, { name: 'Bob' }]
+```
+
 ### ブラウザ
 
 ```html
 <script type="module">
   import { parseYaml, stringifyYaml } from 'https://esm.sh/yaml-gear@alpha';
   const obj = await parseYaml('name: Alice\nage: 30\n');
-  console.log(obj);
+  console.log(obj); // => { name: 'Alice', age: 30 }
 </script>
-```
-
-### Vite / webpack などバンドラー経由
-
-```js
-import { parseYaml, stringifyYaml } from 'yaml-gear';
-const obj = await parseYaml('name: Alice\nage: 30\n');
-console.log(obj); // => { name: 'Alice', age: 30 }
 ```
 
 ### エラーハンドリング

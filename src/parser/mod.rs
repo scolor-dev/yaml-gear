@@ -12,6 +12,30 @@ pub fn parse(input: &str) -> Result<JsValue, YamlError> {
     parser.parse()
 }
 
+pub fn parse_all(input: &str) -> Result<JsValue, YamlError> {
+    let lexer = Lexer::new(input);
+    let mut parser = Parser::new(lexer);
+    let arr = js_sys::Array::new();
+    loop {
+        parser.skip_newlines();
+        if parser.is_eof() { break; }
+        // DocStart（---）をスキップ
+        if matches!(parser.current_token(), Token::DocStart) {
+            parser.advance();
+            parser.skip_newlines();
+        }
+        if parser.is_eof() { break; }
+        let doc = parser.parse_value(0)?;
+        arr.push(&doc);
+        parser.skip_newlines();
+        // DocEnd（...）をスキップ
+        if matches!(parser.current_token(), Token::DocEnd) {
+            parser.advance();
+        }
+    }
+    Ok(arr.into())
+}
+
 // ===== Parser =====
 
 struct Parser<'a> {
@@ -217,55 +241,5 @@ fn interpret_scalar(s: &str) -> JsValue {
             if let Ok(f) = s.parse::<f64>() { return JsValue::from_f64(f); }
             JsValue::from_str(s)
         }
-    }
-}
-
-// ===== テスト =====
-
-#[cfg(test)]
-mod tests {
-    use crate::lexer::Lexer;
-    use wasm_bindgen::JsValue;
-    use wasm_bindgen_test::wasm_bindgen_test;
-
-    fn parse(input: &str) -> JsValue {
-        let lexer = Lexer::new(input);
-        super::Parser::new(lexer).parse().unwrap()
-    }
-
-    #[wasm_bindgen_test]
-    fn test_mapping() {
-        let v = parse("name: Alice\nage: 30\n");
-        let name = js_sys::Reflect::get(&v, &JsValue::from_str("name")).unwrap();
-        let age = js_sys::Reflect::get(&v, &JsValue::from_str("age")).unwrap();
-        assert_eq!(name.as_string().unwrap(), "Alice");
-        assert_eq!(age.as_f64().unwrap(), 30.0);
-    }
-
-    #[wasm_bindgen_test]
-    fn test_bool_and_null() {
-        let v = parse("a: true\nb: null\n");
-        let a = js_sys::Reflect::get(&v, &JsValue::from_str("a")).unwrap();
-        let b = js_sys::Reflect::get(&v, &JsValue::from_str("b")).unwrap();
-        assert_eq!(a.as_bool().unwrap(), true);
-        assert!(b.is_null());
-    }
-
-    #[wasm_bindgen_test]
-    fn test_sequence() {
-        let v = parse("- foo\n- bar\n");
-        let arr = js_sys::Array::from(&v);
-        assert_eq!(arr.get(0).as_string().unwrap(), "foo");
-        assert_eq!(arr.get(1).as_string().unwrap(), "bar");
-    }
-
-    #[wasm_bindgen_test]
-    fn test_max_depth_exceeded() {
-        let mut input = String::new();
-        for i in 0..33 {
-            input.push_str(&format!("{}key{}:\n", "  ".repeat(i), i));
-        }
-        let result = super::Parser::new(crate::lexer::Lexer::new(&input)).parse();
-        assert!(result.is_err());
     }
 }

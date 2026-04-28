@@ -2,11 +2,11 @@
   "name": "yaml-gear",
   "type": "module",
   "description": "A fast YAML parser and stringifier built with Rust and WebAssembly",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scolor-dev/yaml-gear"
+    "url": "git+https://github.com/scolor-dev/yaml-gear.git"
   },
   "main": "js/index.js",
   "types": "js/index.d.ts",

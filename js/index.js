@@ -14,6 +14,11 @@ export async function parseYaml(input) {
     return parse(input);
 }
 
+export async function parseAllYaml(input) {
+    await ensureInit();
+    return parse_all(input);
+}
+
 export async function stringifyYaml(value) {
     await ensureInit();
     return stringify(value);

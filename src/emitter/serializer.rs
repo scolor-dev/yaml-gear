@@ -1,4 +1,3 @@
-// emitter/serializer.rs
 use wasm_bindgen::JsValue;
 use crate::error::YamlError;
 
