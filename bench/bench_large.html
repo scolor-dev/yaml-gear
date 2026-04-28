@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>yaml-gear benchmark</title>
+<style>
+body {
+  font-family: sans-serif;
+  padding: 24px;
+  max-width: 900px;
+}
+.row {
+  margin-bottom: 12px;
+}
+label {
+  display: inline-block;
+  width: 160px;
+}
+select, input, button {
+  padding: 6px;
+  font-size: 14px;
+}
+pre {
+  background: #111;
+  color: #0f0;
+  padding: 16px;
+  white-space: pre-wrap;
+}
+</style>
+</head>
+<body>
+
+<h1>yaml-gear vs js-yaml Benchmark</h1>
+
+<div class="row">
+  <label>YAML File</label>
+  <select id="file">
+    <option value="./samples/small_10.yaml">small_10.yaml</option>
+    <option value="./samples/medium_100.yaml">medium_100.yaml</option>
+    <option value="./samples/large_1000.yaml">large_1000.yaml</option>
+  </select>
+</div>
+
+<div class="row">
+  <label>Iterations</label>
+  <input id="iterations" type="number" value="1000" min="1">
+</div>
+
+<div class="row">
+  <label>Average Runs</label>
+  <input id="avgRuns" type="number" value="5" min="1">
+</div>
+
+<div class="row">
+  <button id="run">Run Benchmark</button>
+</div>
+
+<pre id="result"></pre>
+
+<script type="module">
+import jsyaml from 'https://cdn.jsdelivr.net/npm/js-yaml@4/+esm';
+import init, { parse, stringify } from '../wasm/yaml_gear.js';
+
+await init();
+
+function bench(fn, iterations) {
+    for (let i = 0; i < 50; i++) fn(); // warmup
+
+    const start = performance.now();
+
+    for (let i = 0; i < iterations; i++) {
+        fn();
+    }
+
+    const end = performance.now();
+    return end - start;
+}
+
+function avgBench(fn, iterations, avgRuns) {
+    let total = 0;
+
+    for (let i = 0; i < avgRuns; i++) {
+        total += bench(fn, iterations);
+    }
+
+    return total / avgRuns;
+}
+
+function line(name, time, iterations, avgRuns) {
+    return `${name.padEnd(28)} ${time.toFixed(2)} ms   (${iterations} iter × avg ${avgRuns})`;
+}
+
+document.getElementById("run").addEventListener("click", async () => {
+    const file = document.getElementById("file").value;
+    const iterations = Number(document.getElementById("iterations").value);
+    const avgRuns = Number(document.getElementById("avgRuns").value);
+
+    const result = document.getElementById("result");
+    result.textContent = "Loading YAML...";
+
+    const yaml = await fetch(file).then(r => r.text());
+    const obj = jsyaml.load(yaml);
+
+    const out = [];
+
+    out.push(`File: ${file}`);
+    out.push("");
+
+    out.push("=== Parse ===");
+    out.push(line(
+        "yaml-gear parse",
+        avgBench(() => parse(yaml), iterations, avgRuns),
+        iterations, avgRuns
+    ));
+    out.push(line(
+        "js-yaml parse",
+        avgBench(() => jsyaml.load(yaml), iterations, avgRuns),
+        iterations, avgRuns
+    ));
+
+    out.push("");
+    out.push("=== Stringify ===");
+
+    out.push(line(
+        "yaml-gear stringify",
+        avgBench(() => stringify(obj), iterations, avgRuns),
+        iterations, avgRuns
+    ));
+
+    out.push(line(
+        "js-yaml stringify",
+        avgBench(() => jsyaml.dump(obj), iterations, avgRuns),
+        iterations, avgRuns
+    ));
+
+    out.push("");
+    out.push("=== Parse -> Stringify ===");
+
+    out.push(line(
+        "yaml-gear full",
+        avgBench(() => stringify(parse(yaml)), iterations, avgRuns),
+        iterations, avgRuns
+    ));
+
+    out.push(line(
+        "js-yaml full",
+        avgBench(() => jsyaml.dump(jsyaml.load(yaml)), iterations, avgRuns),
+        iterations, avgRuns
+    ));
+
+    result.textContent = out.join("\n");
+});
+</script>
+
+</body>
+</html>

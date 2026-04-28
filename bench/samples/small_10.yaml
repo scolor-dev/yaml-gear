@@ -1,0 +1,107 @@
+# small_10.yaml
+users:
+  - id: 1
+    name: User1
+    email: user1@example.com
+    age: 21
+    active: false
+    scores: [10, 20, 30]
+    address:
+      city: Tokyo
+      zip: "100-0001"
+      country: Japan
+  - id: 2
+    name: User2
+    email: user2@example.com
+    age: 22
+    active: true
+    scores: [20, 30, 40]
+    address:
+      city: Osaka
+      zip: "530-0001"
+      country: Japan
+  - id: 3
+    name: User3
+    email: user3@example.com
+    age: 23
+    active: false
+    scores: [30, 40, 50]
+    address:
+      city: Nagoya
+      zip: "460-0001"
+      country: Japan
+  - id: 4
+    name: User4
+    email: user4@example.com
+    age: 24
+    active: true
+    scores: [40, 50, 60]
+    address:
+      city: Fukuoka
+      zip: "810-0001"
+      country: Japan
+  - id: 5
+    name: User5
+    email: user5@example.com
+    age: 25
+    active: false
+    scores: [50, 60, 70]
+    address:
+      city: Sapporo
+      zip: "060-0001"
+      country: Japan
+  - id: 6
+    name: User6
+    email: user6@example.com
+    age: 26
+    active: true
+    scores: [60, 70, 80]
+    address:
+      city: Kobe
+      zip: "650-0001"
+      country: Japan
+  - id: 7
+    name: User7
+    email: user7@example.com
+    age: 27
+    active: false
+    scores: [70, 80, 90]
+    address:
+      city: Kyoto
+      zip: "600-0001"
+      country: Japan
+  - id: 8
+    name: User8
+    email: user8@example.com
+    age: 28
+    active: true
+    scores: [80, 90, 100]
+    address:
+      city: Sendai
+      zip: "980-0001"
+      country: Japan
+  - id: 9
+    name: User9
+    email: user9@example.com
+    age: 29
+    active: false
+    scores: [90, 95, 99]
+    address:
+      city: Hiroshima
+      zip: "730-0001"
+      country: Japan
+  - id: 10
+    name: User10
+    email: user10@example.com
+    age: 30
+    active: true
+    scores: [100, 100, 100]
+    address:
+      city: Yokohama
+      zip: "220-0001"
+      country: Japan
+
+config:
+  version: "1.0"
+  debug: false
+  max_connections: 10

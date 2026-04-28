@@ -1,0 +1,23 @@
+{
+  "name": "yaml-gear",
+  "type": "module",
+  "description": "A fast YAML parser and stringifier built with Rust and WebAssembly",
+  "version": "0.1.0-alpha.2",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scolor-dev/yaml-gear"
+  },
+  "main": "js/index.js",
+  "types": "js/index.d.ts",
+  "files": [
+    "js/index.js",
+    "wasm/yaml_gear.js",
+    "wasm/yaml_gear_bg.wasm",
+    "wasm/yaml_gear.d.ts"
+  ],
+  "scripts": {
+    "build": "wasm-pack build --target web --out-dir wasm",
+    "publish:alpha": "npm run build && npm publish --tag alpha"
+  }
+}
