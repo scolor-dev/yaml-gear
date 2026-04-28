@@ -3,6 +3,7 @@
   "type": "module",
   "description": "A fast YAML parser and stringifier built with Rust and WebAssembly",
   "version": "0.1.0-alpha.3",
+  "readme": "README.md",
   "license": "MIT",
   "repository": {
     "type": "git",
